@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传测试</title>
+</head>
+<body>
+<input name="file" type="file" data-allow="jpg,jpeg">
+<input type="button" value="上传">
+<script src="/static/js/jquery-2.1.1.min.js"/>
+<script src="/static/js/ajaxhook.min.js"/>
+
+<script src="/static/js/common/system.js"/>
+<script type="text/javascript">
+    function upload() {
+        var formData = new FormData();
+        formData.append('file', $('input[name=file]')[0].files[0]);
+        jQuery.support.cors = true;
+        $.ajax({
+            type: 'post',
+            url: getApiUrl("api/upload"),
+            data: formData,
+            xhrFields: {
+                withCredentials: true
+            },
+            cache: false,
+            processData: false,
+            contentType: false
+        }).success(function (result) {
+            if (result.status == 1) {
+                alert("上传成功");
+            } else {
+                alert(result.msg);
+            }
+
+        });
+    }
+</script>
+</body>
+</html>

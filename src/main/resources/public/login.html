@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录测试</title>
+</head>
+<body>
+<form>
+    <input name="userName" type="text" value="dushitaoyuan" placeholder="请输入账户名">
+    <input name="password" type="password" value="123456" placeholder="请输入密码">
+    <input type="button" value="登录" onclick="upload()">
+</form>
+
+
+</body>
+<script src="/static/js/crypt/core-min.js"></script>
+<script src="/static/js/crypt/enc-base64-min.js"></script>
+<script src="/static/js/crypt/sha256-min.js"></script>
+<script src="/static/js/jquery-2.1.1.min.js"></script>
+<script src="/static/js/ajaxhook.min.js"></script>
+<script src="/static/js/common/system.js"></script>
+<script type="text/javascript">
+    function upload() {
+        var password = $("input[name='password']").val();
+        password = encodePassword(password);
+        jQuery.support.cors = true;
+        $.ajax({
+            type: 'post',
+            url: getApiUrl("api/login"),
+            data: {
+                "userName": $("input[name='userName']").val(),
+                "password": password
+            },
+            dataType: 'json',
+            traditional: true,
+            async: false,
+            xhrFields: {
+                withCredentials: true
+            }
+        }).success(function (result) {
+            if (result.success == 1) {
+                alert("登录成功");
+                window.location.href = getStaticUrl("public/index.html");
+            } else {
+                alert(result.msg);
+            }
+
+        });
+    }
+</script>
+</html>
