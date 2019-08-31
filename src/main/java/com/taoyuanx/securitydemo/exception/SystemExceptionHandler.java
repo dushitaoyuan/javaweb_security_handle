@@ -8,7 +8,6 @@ import com.taoyuanx.securitydemo.utils.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -54,7 +53,7 @@ public class SystemExceptionHandler implements HandlerExceptionResolver {
         } else if (e instanceof HttpMediaTypeNotSupportedException) {
             HttpMediaTypeNotSupportedException mediaEx = (HttpMediaTypeNotSupportedException) e;
             result = ResultBuilder.failed(ResultCode.UN_SUPPORT_MEDIATYPE.code, "不支持该媒体类型:" + mediaEx.getContentType());
-        } else if (e instanceof RadioLimitException) {
+        } else if (e instanceof LimitException) {
             httpStatus = HttpStatus.TOO_MANY_REQUESTS;
             result = ResultBuilder.failed(ResultCode.TOO_MANY_REQUESTS.code, e.getMessage());
         } else if (e instanceof JSONException) {

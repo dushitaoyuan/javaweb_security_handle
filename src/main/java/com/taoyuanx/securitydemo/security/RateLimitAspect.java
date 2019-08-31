@@ -3,7 +3,7 @@ package com.taoyuanx.securitydemo.security;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.RateLimiter;
-import com.taoyuanx.securitydemo.exception.RadioLimitException;
+import com.taoyuanx.securitydemo.exception.LimitException;
 import com.taoyuanx.securitydemo.utils.RequestUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -63,7 +63,7 @@ public class RateLimitAspect {
     private void handleRateLimit(RateLimit rateLimit, String methodName) throws Throwable {
         RateLimiter rateLimiter = doGetRateLimiter(rateLimit, methodName);
         if (!rateLimiter.tryAcquire()) {
-            throw new RadioLimitException("请求过于频繁,请稍后再试");
+            throw new LimitException("请求过于频繁,请稍后再试");
         }
     }
 
