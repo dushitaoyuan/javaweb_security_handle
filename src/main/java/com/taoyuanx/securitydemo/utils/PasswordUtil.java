@@ -30,7 +30,7 @@ public class PasswordUtil {
     }
 
     public static boolean isPasswordEqual(String passwordHash, String dbPasswordHash) {
-        if (passwordHash != null) {
+        if (passwordHash == null) {
             return false;
         }
         return passwordHash.equals(dbPasswordHash);

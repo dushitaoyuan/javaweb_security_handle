@@ -28,7 +28,12 @@ public class GlobalConfig {
     private String allowUploadExt;
     private String tokenKey;
     private Long expireSeconds;
+    private String fileStorageDir;
+
+    private String systemFileFormat;
     public String getConfig(String configKey) {
         return environment.getProperty(configKey);
     }
+
+
 }

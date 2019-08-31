@@ -8,6 +8,7 @@ import com.taoyuanx.securitydemo.utils.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -31,8 +32,9 @@ public class SystemExceptionHandler implements HandlerExceptionResolver {
             doHandleException(request, response, handler, e);
             return new ModelAndView();
         } else {
+            ModelAndView modelAndView=new ModelAndView();
             //todo跳转到页面
-            return new ModelAndView();
+            return modelAndView;
 
         }
     }
@@ -78,9 +80,9 @@ public class SystemExceptionHandler implements HandlerExceptionResolver {
 
 
     public static boolean isJson(HttpServletRequest request) {
-        String header = request.getHeader("Content-Type");
+        String contentType = request.getHeader("Content-Type");
         String accept = request.getHeader("Accept");
-        if ((header != null && header.contains("application/json")) || (accept != null && accept.contains("application/json"))) {
+        if ((accept != null && accept.contains("json"))||(contentType != null && contentType.contains("json"))) {
             return true;
         } else {
             return false;

@@ -22,6 +22,15 @@ public class ResponseUtil {
             throw new RuntimeException(ex);
         }
     }
-
+    public static void responseJson(HttpServletResponse response, Object result, Integer httpStatus) {
+        response.setCharacterEncoding("UTF-8");
+        response.setHeader("Content-type", "application/json;charset=UTF-8");
+        response.setStatus(httpStatus);
+        try {
+            response.getWriter().write(JSON.toJSONString(result));
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
 }

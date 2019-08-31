@@ -33,7 +33,7 @@ public class FileTypeCheckUtil {
     }
 
     public static String getType(String fileName) {
-        return fileName.substring(fileName.lastIndexOf("."));
+        return fileName.substring(fileName.lastIndexOf(".")+1);
     }
 
     public static String getRealType(InputStream inputStream) {

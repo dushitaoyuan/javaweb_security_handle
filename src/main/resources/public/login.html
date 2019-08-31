@@ -13,12 +13,12 @@
 
 
 </body>
-<script src="/static/js/crypt/core-min.js"></script>
-<script src="/static/js/crypt/enc-base64-min.js"></script>
-<script src="/static/js/crypt/sha256-min.js"></script>
-<script src="/static/js/jquery-2.1.1.min.js"></script>
-<script src="/static/js/ajaxhook.min.js"></script>
-<script src="/static/js/common/system.js"></script>
+<script src="/js/crypt/core-min.js"></script>
+<script src="/js/crypt/enc-base64-min.js"></script>
+<script src="/js/crypt/sha256-min.js"></script>
+<script src="/js/jquery-2.1.1.min.js"></script>
+<script src="/js/ajaxhook.min.js"></script>
+<script src="/js/common/system.js"></script>
 <script type="text/javascript">
     function upload() {
         var password = $("input[name='password']").val();
@@ -40,7 +40,7 @@
         }).success(function (result) {
             if (result.success == 1) {
                 alert("登录成功");
-                window.location.href = getStaticUrl("public/index.html");
+                window.location.href = getStaticUrl("upload.html");
             } else {
                 alert(result.msg);
             }

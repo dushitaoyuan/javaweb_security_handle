@@ -10,6 +10,7 @@ import com.taoyuanx.securitydemo.interceptor.RefererHandlerIntercepter;
 import com.taoyuanx.securitydemo.interceptor.SimpleAuthHandlerIntercepter;
 import com.taoyuanx.securitydemo.security.blacklist.BlackListIpCheck;
 import com.taoyuanx.securitydemo.security.blacklist.DefaultBlackListIpCheck;
+import com.taoyuanx.securitydemo.utils.FileHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +22,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.nio.charset.Charset;
@@ -35,7 +39,6 @@ import java.util.List;
  * @desc mvc配置
  * @date 2019/8/29
  */
-@EnableWebMvc
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
@@ -44,15 +47,15 @@ public class MvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins(globalConfig.getSystemDomain());
+        if (StringUtils.isEmpty(globalConfig.getSystemDomain())) {
+            registry.addMapping("/**");
+        } else {
+            registry.addMapping("/**").allowedOrigins(globalConfig.getSystemDomain());
+        }
+
+
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("/public/**").addResourceLocations("classpath:/public/");
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/META-INF/resources/");
-    }
 
     /**
      * 拦截器
@@ -65,9 +68,10 @@ public class MvcConfig implements WebMvcConfigurer {
          * 匹配路径按需设定
          */
         registry.addInterceptor(refererHandlerIntercepter()).addPathPatterns("/**")
-                .excludePathPatterns("/static/**").excludePathPatterns("/public/**");
+                .excludePathPatterns("/**/*.css", "/**/*.html", "/**/*.js");
         registry.addInterceptor(simpleAuthHandlerIntercepter()).addPathPatterns("/**")
-                .excludePathPatterns("/static/**").excludePathPatterns("/public/**");
+                .excludePathPatterns("/**/*.css", "/**/*.html", "/**/*.js", "/**/*.png")
+        ;
     }
 
     /**
@@ -92,10 +96,12 @@ public class MvcConfig implements WebMvcConfigurer {
         fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
         List<MediaType> fastMediaTypes = new ArrayList<>();
         fastMediaTypes.add(MediaType.APPLICATION_JSON);
+        fastMediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
+        fastMediaTypes.add(MediaType.TEXT_PLAIN);
         fastJsonConfig.setCharset(Charset.forName("UTF-8"));
         fastJsonHttpMessageConverter.setSupportedMediaTypes(fastMediaTypes);
         fastJsonHttpMessageConverter.setFastJsonConfig(fastJsonConfig);
-        converters.add(fastJsonHttpMessageConverter);
+        converters.add(0,fastJsonHttpMessageConverter);
     }
 
 
@@ -145,6 +151,12 @@ public class MvcConfig implements WebMvcConfigurer {
     public BlackListIpCheck blackListIpCheck() {
         BlackListIpCheck blackListIpCheck = new DefaultBlackListIpCheck(globalConfig.getBlackListIp());
         return blackListIpCheck;
+    }
+
+    @Bean
+    public  FileHandler fileHandler(){
+        FileHandler fileHandler=new FileHandler(globalConfig.getFileStorageDir(),globalConfig.getTokenKey(),false,globalConfig.getSystemFileFormat());
+        return  fileHandler;
     }
 
 }
