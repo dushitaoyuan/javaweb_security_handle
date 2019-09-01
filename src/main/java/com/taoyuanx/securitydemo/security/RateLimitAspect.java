@@ -107,17 +107,16 @@ public class RateLimitAspect {
                     break;
             }
         }
-
-        if (rateHolder.containsKey(key)) {
-            return rateHolder.get(key);
-        }
-        RateLimiter rateLimiter = RateLimiter.create(rateLimit.limit());
-        rateHolder.put(key, rateLimiter);
         //超过固定阈值,清空,重构
         if (rateHolder.size() > MAX_HOLDER_SIZE) {
             rateHolder.clear();
         }
-        return rateLimiter;
+        if (rateHolder.containsKey(key)) {
+            return rateHolder.get(key);
+        }
+        RateLimiter rateLimiter = RateLimiter.create(rateLimit.limit());
+        rateHolder.putIfAbsent(key, rateLimiter);
+        return rateHolder.get(key);
 
     }
 
