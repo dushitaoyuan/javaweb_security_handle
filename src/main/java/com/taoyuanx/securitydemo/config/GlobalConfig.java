@@ -4,17 +4,12 @@ import com.taoyuanx.securitydemo.security.ratelimit.AbstractRateLimiter;
 import com.taoyuanx.securitydemo.security.ratelimit.RedisRateLimiter;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -40,19 +35,22 @@ public class GlobalConfig {
     private String fileStorageDir;
 
     private String systemFileFormat;
+
     public String getConfig(String configKey) {
         return environment.getProperty(configKey);
     }
 
     /**
      * 限流实现类
+     *
      * @param redisTemplate
      * @return
      */
     @Bean
-    public AbstractRateLimiter rateLimiter(RedisTemplate redisTemplate){
-        RedisRateLimiter redisRateLimiter=new RedisRateLimiter(redisTemplate);
-        return  redisRateLimiter;
+    @Autowired
+    public AbstractRateLimiter rateLimiter(StringRedisTemplate redisTemplate) {
+        RedisRateLimiter redisRateLimiter = new RedisRateLimiter(redisTemplate);
+        return redisRateLimiter;
     }
 
 

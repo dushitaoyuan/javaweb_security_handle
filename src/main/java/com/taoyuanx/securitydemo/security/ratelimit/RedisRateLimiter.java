@@ -1,7 +1,7 @@
 package com.taoyuanx.securitydemo.security.ratelimit;
 
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.scripting.support.ResourceScriptSource;
@@ -17,40 +17,40 @@ import java.util.List;
  * @date 2019/9/5
  */
 public class RedisRateLimiter extends AbstractRateLimiter {
-    private RedisTemplate stringRedisTemplate;
-    private RedisScript<List<Long>> script;
+    private StringRedisTemplate redisTemplate;
+    private RedisScript<List<Long>> tokenScript;
+    private RedisScript<Long> countScript;
 
-    public RedisRateLimiter(RedisTemplate redisTemplate) {
+    public RedisRateLimiter(StringRedisTemplate redisTemplate) {
         DefaultRedisScript script = new DefaultRedisScript();
-        script.setScriptSource(new ResourceScriptSource(
-                new ClassPathResource("META-INF/demo.lua")));
+        script.setScriptSource(new ResourceScriptSource(new ClassPathResource("META-INF/rate_limiter_token.lua")));
         script.setResultType(List.class);
-        this.script = script;
-        this.stringRedisTemplate = redisTemplate;
+        this.tokenScript = script;
+
+        script = new DefaultRedisScript();
+        script.setScriptSource(new ResourceScriptSource(new ClassPathResource("META-INF/rate_limiter_count.lua")));
+        script.setResultType(Long.class);
+        this.countScript = script;
+
+        this.redisTemplate = redisTemplate;
     }
 
-    /* @Override
-     public boolean tryAcquire(String key, Double limit) {
-         return doTryAcquire(1, key, limit);
-     }
-
-     @Override
-     public boolean tryAcquire(int permits, String key, Double limit) {
-         return doTryAcquire(permits, key, limit);
-     }*/
     @Override
     protected boolean doTryAcquire(int permits, String key, Double limit) {
-        List<Object> scriptArgs = Arrays.asList(limit.longValue(), limit.longValue(), Instant.now().getEpochSecond(), permits);
-        Object execute = stringRedisTemplate.execute(this.script, getKeys(key),
-                scriptArgs);
+        String[] scriptArgs = {limit.longValue() + "", limit.longValue() + "", Instant.now().getEpochSecond() + "", permits + ""};
+        List<Long> results = redisTemplate.execute(this.tokenScript, getKeys(key), scriptArgs);
+        return results.get(0) == 1L;
 
+    }
 
-        return execute == null;
-
+    @Override
+    public boolean tryCount(int count, String key, Long totalCount) {
+        String[] scriptArgs = {count + "", totalCount + ""};
+        Long result = redisTemplate.execute(this.countScript, Arrays.asList(key), scriptArgs);
+        return result == 1L;
     }
 
     private List<String> getKeys(String key) {
-
         int keyId = key.hashCode();
         String prefix = "request_rate_limiter.{" + keyId;
         String tokenKey = prefix + "}.tokens";

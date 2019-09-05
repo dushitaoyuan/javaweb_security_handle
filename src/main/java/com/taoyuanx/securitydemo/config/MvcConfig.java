@@ -154,6 +154,7 @@ public class MvcConfig implements WebMvcConfigurer {
     }
 
     @Bean
+
     public  FileHandler fileHandler(){
         FileHandler fileHandler=new FileHandler(globalConfig.getFileStorageDir(),globalConfig.getTokenKey(),false,globalConfig.getSystemFileFormat());
         return  fileHandler;

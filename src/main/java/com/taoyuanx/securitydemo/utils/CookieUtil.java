@@ -1,6 +1,7 @@
 package com.taoyuanx.securitydemo.utils;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 public class CookieUtil {
 	//判断cookie是否存在
@@ -14,7 +15,13 @@ public class CookieUtil {
 		}
 		return null;
 	}
-
+	//删除cookie
+	public static void removeCookie(HttpServletResponse response,String path, String cookieName){
+		Cookie cookie=new Cookie(cookieName,null);
+		cookie.setPath(path);
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+	}
 
 
 

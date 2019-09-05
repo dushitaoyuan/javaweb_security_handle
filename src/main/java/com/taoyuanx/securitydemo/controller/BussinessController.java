@@ -9,6 +9,7 @@ import com.taoyuanx.securitydemo.dto.AccountDTO;
 import com.taoyuanx.securitydemo.exception.ServiceException;
 import com.taoyuanx.securitydemo.helper.ToeknHelper;
 import com.taoyuanx.securitydemo.security.*;
+import com.taoyuanx.securitydemo.utils.CookieUtil;
 import com.taoyuanx.securitydemo.utils.FileHandler;
 import com.taoyuanx.securitydemo.utils.FileTypeCheckUtil;
 import com.taoyuanx.securitydemo.utils.PasswordUtil;
@@ -156,6 +157,19 @@ public class BussinessController {
 
     }
 
+
+    /**
+     * 登录安全控制
+     *
+     * @return
+     */
+    @PostMapping("loginOut")
+    @ResponseBody
+    public void loginOut(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        CookieUtil.removeCookie(response, "/", SystemConstants.TOKEN_COOKIE_KEY);
+        request.getSession().invalidate();
+    }
+
     /**
      * 黑名单测试
      *
@@ -178,7 +192,7 @@ public class BussinessController {
          */
         String fileId = DateUtil.format(new Date(), "yyyy-mm-dd") + "/" + multipartFile.getOriginalFilename();
         File file = new File(globalConfig.getFileStorageDir(), fileId);
-        if(!file.getParentFile().exists()){
+        if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
         multipartFile.transferTo(file);
