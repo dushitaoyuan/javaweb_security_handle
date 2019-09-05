@@ -11,7 +11,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RateLimit {
     /**
-     * 限流并发 和限流的key,类型
+     * limit 每秒并发
+     * key 限流的key
+     * type 限流类型 参见:com.taoyuanx.securitydemo.security.RateLimitType
      */
     double limit() default 100;
 

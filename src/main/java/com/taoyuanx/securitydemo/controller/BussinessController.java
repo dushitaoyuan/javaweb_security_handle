@@ -112,7 +112,7 @@ public class BussinessController {
      */
     @GetMapping("rateLimit_key")
     @ResponseBody
-    @RateLimit(type = RateLimitType.SERVICE_KEY, limit = 2, key = "api/rateLimit_key")
+    @RateLimit(type = RateLimitType.SERVICE_KEY, limit = 100, key = "api/rateLimit_key")
     public String rateLimitKey() {
         return "hello rateLimit!";
     }

@@ -17,4 +17,14 @@ public class SecurityDemoApplicationTests {
         bussinessController.admin();
     }
 
+
+    @Test
+    public void reateLimit()
+    {
+        int batch=100;
+        for(int i=0;i<batch;i++){
+            System.out.println(bussinessController.rateLimitKey());
+        }
+    }
+
 }
