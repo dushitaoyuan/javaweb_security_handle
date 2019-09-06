@@ -36,4 +36,3 @@ else
     return -1
 end
 
---todo bitmap 标记 资源为0
