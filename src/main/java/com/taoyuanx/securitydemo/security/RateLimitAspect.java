@@ -87,11 +87,19 @@ public class RateLimitAspect {
             }
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("采用[{}]限流策略,限流key:{}", RateLimitType.IP, key);
+            LOG.debug("采用[{}]限流策略,限流key:{}", type, key);
         }
-        if (!rateLimiter.tryAcquire(key, rateLimit.limit())) {
-            throw new LimitException("请求过于频繁,请稍后再试");
+        if (type.equals(RateLimitType.TOTAL_COUNT)) {
+            if (!rateLimiter.tryCount(1, key, rateLimit.totalCount())) {
+                throw new LimitException("访问字数已达最大限制:" + rateLimit.totalCount() + ",请稍后再试");
+            }
+        } else {
+            if (!rateLimiter.tryAcquire(key, rateLimit.limit())) {
+                throw new LimitException("请求过于频繁,请稍后再试");
+            }
         }
+
+
     }
 
 

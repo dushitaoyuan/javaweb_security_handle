@@ -20,7 +20,7 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
 
     private Map<String, LongAdder> countHolder = new ConcurrentHashMap();
     /**
-     * 总数限流到0后,标记
+     * 总数限流到0后,标记,会有些许误判,不在乎内存的话,可用hashset存
      */
     private BloomFilter<CharSequence> TOTAL_LIMIT_ZERO_FLAG = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()), MAX_HOLDER_SIZE * 20);
 

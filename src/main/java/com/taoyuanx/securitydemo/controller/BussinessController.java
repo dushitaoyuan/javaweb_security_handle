@@ -206,4 +206,9 @@ public class BussinessController {
     public void upload(HttpServletRequest request, HttpServletResponse response) throws Exception {
         fileHandler.handleFile(response, request);
     }
+    @RateLimit(type = RateLimitType.TOTAL_COUNT,key = "rate_count",totalCount = 100)
+    @GetMapping("rate_count")
+    public void rateCount(int index) throws Exception {
+        System.out.println("rate_count\t"+index);
+    }
 }
