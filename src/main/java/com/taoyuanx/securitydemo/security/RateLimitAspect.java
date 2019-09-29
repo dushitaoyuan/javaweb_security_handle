@@ -63,7 +63,7 @@ public class RateLimitAspect {
         if (type == null) {
             key = methodName;
             if (LOG.isDebugEnabled()) {
-                LOG.debug("限流策略未定义,采用[]限流策略", methodName, RateLimitType.METHOD);
+                LOG.debug("{}限流策略未定义,采用[{}]限流策略", methodName, RateLimitType.METHOD);
             }
         } else {
             switch (type) {
@@ -79,7 +79,6 @@ public class RateLimitAspect {
                     key = methodName;
                     break;
                 case SERVICE_KEY:
-
                     break;
                 case GLOBAL:
                     key = "global";
@@ -91,7 +90,7 @@ public class RateLimitAspect {
         }
         if (type.equals(RateLimitType.TOTAL_COUNT)) {
             if (!rateLimiter.tryCount(1, key, rateLimit.totalCount())) {
-                throw new LimitException("访问字数已达最大限制:" + rateLimit.totalCount() + ",请稍后再试");
+                throw new LimitException("访问次数已达最大限制:" + rateLimit.totalCount() + ",请稍后再试");
             }
         } else {
             if (!rateLimiter.tryAcquire(key, rateLimit.limit())) {

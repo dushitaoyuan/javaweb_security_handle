@@ -1,6 +1,5 @@
 package com.taoyuanx.securitydemo.security.ratelimit;
 
-import com.sun.org.apache.xml.internal.utils.StringToIntTable;
 import com.taoyuanx.securitydemo.utils.StringIntUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -38,7 +37,7 @@ public class RedisRateLimiter extends AbstractRateLimiter {
     }
 
     @Override
-    protected boolean doTryAcquire(int permits, String key, Double limit) {
+    public boolean doTryAcquire(int permits, String key, Double limit) {
         String[] scriptArgs = {limit.longValue() + "", limit.longValue() + "", Instant.now().getEpochSecond() + "", permits + ""};
         List<Long> results = redisTemplate.execute(this.tokenScript, getKeys(key), scriptArgs);
         return results.get(0) == 1L;
@@ -47,9 +46,8 @@ public class RedisRateLimiter extends AbstractRateLimiter {
 
     @Override
     public boolean tryCount(int count, String key, Long totalCount) {
-
-        String[] scriptArgs = {count + "", totalCount + "", StringIntUtil.toInt(key) +""};
-        Long result = redisTemplate.execute(this.countScript, Arrays.asList(key,"zero_flag"), scriptArgs);
+        String[] scriptArgs = {count + "", totalCount + "", StringIntUtil.toInt(key) + ""};
+        Long result = redisTemplate.execute(this.countScript, Arrays.asList(key, "zero_flag"), scriptArgs);
         return result >= 0;
     }
 

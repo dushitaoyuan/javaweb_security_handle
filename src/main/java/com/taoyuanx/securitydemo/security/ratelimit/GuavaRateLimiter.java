@@ -24,7 +24,7 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
      */
     private BloomFilter<CharSequence> TOTAL_LIMIT_ZERO_FLAG = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()), MAX_HOLDER_SIZE * 20);
 
-    protected boolean doTryAcquire(int permits, String key, Double limit) {
+    public boolean doTryAcquire(int permits, String key, Double limit) {
         //超过固定阈值,清空,重构
         if (rateHolder.size() > MAX_HOLDER_SIZE) {
             rateHolder.clear();

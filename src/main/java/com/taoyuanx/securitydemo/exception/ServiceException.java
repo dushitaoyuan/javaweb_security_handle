@@ -17,6 +17,9 @@ public class ServiceException extends RuntimeException {
 		super(msg);
 		this.errorCode=errorCode;
 	}
+	public Integer getErrorCode(){
+		return getErrorCode();
+	}
 	
 	
 }
