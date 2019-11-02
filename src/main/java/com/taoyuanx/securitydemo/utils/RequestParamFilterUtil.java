@@ -1,9 +1,11 @@
 package com.taoyuanx.securitydemo.utils;
 
 import com.google.common.base.Splitter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author dushitaoyuan
@@ -51,7 +53,7 @@ public class RequestParamFilterUtil {
         }
         for (String param : params) {
             for (int i = 0, len = SQL_KEY_WORDS.size(); i < len; i++) {
-                if (param.contains(" " + SQL_KEY_WORDS.get(i) + " ")) {
+                if (param.toLowerCase().contains(" " + SQL_KEY_WORDS.get(i) + " ")) {
                     return true;
                 }
             }
@@ -59,4 +61,5 @@ public class RequestParamFilterUtil {
 
         return false;
     }
+
 }
