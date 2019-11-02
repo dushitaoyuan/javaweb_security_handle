@@ -19,7 +19,8 @@ public abstract class AbstractRateLimiter {
     public boolean tryAcquire(String key, Double limit){
         return doTryAcquire(1,key,limit);
     }
-    protected abstract boolean doTryAcquire(int permits, String key, Double limit);
+
+    public abstract boolean doTryAcquire(int permits, String key, Double limit);
 
     /**
      * 增加资源访问次数 用户可自行持久化记录
