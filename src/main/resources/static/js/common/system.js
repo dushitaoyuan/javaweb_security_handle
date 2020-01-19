@@ -1,7 +1,7 @@
 //全局定义变量和全局函数
 
-var apiBaseUrl = "http://localhost:8080/"
-var staticBaseUrl = "http://localhost:8080/"
+var apiBaseUrl = "http://localhost:9999/"
+var staticBaseUrl = "http://localhost:9999/"
 
 function getApiUrl(path) {
     return apiBaseUrl + path;

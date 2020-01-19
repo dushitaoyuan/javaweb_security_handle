@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>加密例子</title>
+    <script src="/js/crypt/core-min.js"></script>
+    <script src="/js/crypt/enc-base64-min.js"></script>
+    <script src="/js/crypt/sha256-min.js"></script>
+    <script src="/js/crypt/aes.js"></script>
+    <script src="/js/jquery-2.1.1.min.js"></script>
+    <script src="/js/common/system.js"></script>
+    <script src="/js/jquery.serializeObject.min.js"></script>
+    <script src="/js/crypt/jsencrypt.min.js"></script>
+
+</head>
+<body>
+
+<input name="serverPub" type="hidden" th:value="${serverPub}">
+<input id="iv" name="iv" type="hidden" th:value="${iv}">
+<form id="encodeForm" action="" method="post">
+    <input name="serverRandom" type="hidden" th:value="${serverRandom}">
+    <input name="clientAesEncodePassword" type="hidden" value="">
+    <input name="encodeData" type="hidden" value="">
+    <input name="dataHash" type="hidden" value="">
+    <button onclick="encryptSubmit()">提交</button>
+
+</form>
+
+<script type="text/javascript">
+    function encryptSubmit() {
+        var clientAesPassword = randomStr(16);
+        var serverPub = $("input[name='serverPub']").val();
+        var encodePassword = encryptPublicKey(serverPub, clientAesPassword);
+        var data = "123456";
+        var encodeData = encrypt(data, clientAesPassword);
+        $("#encodeForm input[name='clientAesEncodePassword']").val(encodePassword);
+        $("#encodeForm input[name='encodeData']").val(encodeData);
+        $("#encodeForm input[name='dataHash']").val(hashData(data));
+        var encodeFormData = $("#encodeForm").serializeObject();
+        console.log(encodeFormData)
+        jQuery.support.cors = true;
+        $.ajax({
+            type: 'post',
+            url: getApiUrl("crypt/reciveEncrypt"),
+            data: encodeFormData,
+            dataType: 'json',
+            traditional: true,
+            async: false,
+            xhrFields: {
+                withCredentials: true
+            }
+        }).success(function (result) {
+            if (result.success == 1) {
+                alert("登录成功");
+            } else {
+                alert(result.msg);
+            }
+
+        });
+    }
+
+    function randomStr(len) {
+        var x = "0123456789qwertyuioplkjhgfdsazxcvbnm";
+        var tmp = "";
+        for (var i = 0; i < len; i++) {
+            tmp += x.charAt(Math.ceil(Math.random() * 100000000) % x.length);
+        }
+        return tmp;
+    }
+
+    function encryptPublicKey(publicKeyBase64, data) {
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey(publicKeyBase64);
+        var data = encrypt.encrypt(data);
+        return data;
+    }
+
+    var iv = CryptoJS.enc.Utf8.parse($("#iv").val());
+
+
+    //Aes 加解密
+    function decrypt(data, aesKey) {
+        var key = CryptoJS.enc.Utf8.parse(aesKey);
+        var decryptData = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(data));
+        var decrypt = CryptoJS.AES.decrypt(decryptData, key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        var decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
+        return decryptedStr.toString();
+    }
+
+    function encrypt(data, aesKey) {
+        var key = CryptoJS.enc.Utf8.parse(aesKey)
+        var encrypted = CryptoJS.AES.encrypt(data, key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+    }
+
+    // hash
+    function hashData(data) {
+        return CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex)
+    }
+
+</script>
+</body>
+</html>

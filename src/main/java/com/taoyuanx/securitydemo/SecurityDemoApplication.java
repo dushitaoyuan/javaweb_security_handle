@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ServletComponentScan("com.taoyuanx.securitydemo.web")
-class SecurityDemoApplication {
+public class SecurityDemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SecurityDemoApplication.class, args);
