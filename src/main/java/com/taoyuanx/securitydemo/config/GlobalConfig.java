@@ -77,10 +77,6 @@ public class GlobalConfig implements InitializingBean {
         publicKey = RSAUtil.getPublicKey(keyStore);
         privateKey = RSAUtil.getPrivateKey(keyStore, rsaP12Password);
         certificate = RSAUtil.getCertificate(keyStore);
-        publickKeyBase64 = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCejQE9rKg8v5TuaS9tODR9QNPg\n" +
-                "P9MDhtyIFmKLmQTu2an/pEW18XWXEKi04ORYfwr7BjAJ9HMWspGRg8rbSjbethud\n" +
-                "QnJUDtrqHNDYzJ1HhQT7sngGvpuH9ME7ZW4yZcMDS7/i5tQSps31JmGI+ULZg1cv\n" +
-                "G5A/SbSqiE5PXSfIhQIDAQAB";
-                Base64.encodeBase64String(certificate.getEncoded());
+        publickKeyBase64 = Base64.encodeBase64String(publicKey.getEncoded());
     }
 }
