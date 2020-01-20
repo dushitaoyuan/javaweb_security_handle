@@ -12,16 +12,18 @@ import java.util.List;
  * @date 2019/8/30
  */
 public class DefaultBlackListIpCheck implements BlackListIpCheck {
-   private BloomFilter<CharSequence> ipBlackList;
-   public DefaultBlackListIpCheck(List<String> ipBlackList){
-       if(ipBlackList==null||ipBlackList.isEmpty()){
-           throw new RuntimeException("黑名单ip不可为空");
-       }
-       this.ipBlackList = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()), ipBlackList.size());
-       for(String blackListIp:ipBlackList){
-           this.ipBlackList.put(blackListIp);
-       }
-   }
+    private BloomFilter<CharSequence> ipBlackList;
+    private double bloomExceptedFpp = 0.001;
+
+    public DefaultBlackListIpCheck(List<String> ipBlackList) {
+        if (ipBlackList == null || ipBlackList.isEmpty()) {
+            throw new RuntimeException("黑名单ip不可为空");
+        }
+        this.ipBlackList = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()), ipBlackList.size(), bloomExceptedFpp);
+        for (String blackListIp : ipBlackList) {
+            this.ipBlackList.put(blackListIp);
+        }
+    }
 
 
     @Override
