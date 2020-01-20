@@ -22,8 +22,9 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
     /**
      * 总数限流到0后,标记,会有些许误判,不在乎内存的话,可用hashset存
      */
-    private BloomFilter<CharSequence> TOTAL_LIMIT_ZERO_FLAG = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()), MAX_HOLDER_SIZE * 20);
+    private BloomFilter<CharSequence> TOTAL_LIMIT_ZERO_FLAG = BloomFilter.create(Funnels.stringFunnel(Charset.defaultCharset()), MAX_HOLDER_SIZE * 20, 0.001);
 
+    @Override
     public boolean doTryAcquire(int permits, String key, Double limit) {
         //超过固定阈值,清空,重构
         if (rateHolder.size() > MAX_HOLDER_SIZE) {
@@ -32,8 +33,9 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
         RateLimiter rateLimiter = null;
         if (rateHolder.containsKey(key)) {
             rateLimiter = rateHolder.get(key);
+        } else {
+            rateLimiter = RateLimiter.create(limit);
         }
-        rateLimiter = RateLimiter.create(limit);
         rateHolder.putIfAbsent(key, rateLimiter);
         return rateLimiter.tryAcquire(permits);
     }

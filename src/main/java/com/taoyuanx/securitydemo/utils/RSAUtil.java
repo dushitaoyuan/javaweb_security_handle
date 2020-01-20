@@ -98,12 +98,12 @@ public final class RSAUtil {
         int key_len = publicKey.getModulus().bitLength() / 8;
         // 加密数据长度 <= 模长-11,如果明文长度大于模长-11则要分组加密
         key_len -= 11;
-        byte[] dataReturn = null;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (int i = 0; i < data.length; i += key_len) {
             byte[] doFinal = cipher.doFinal(HelperUtil.subarray(data, i, i + key_len));
-            dataReturn = HelperUtil.addAll(dataReturn, doFinal);
+            outputStream.write(doFinal);
         }
-        return dataReturn;
+        return outputStream.toByteArray();
     }
 
 
@@ -139,37 +139,55 @@ public final class RSAUtil {
     }
 
 
-    public static void encryptByPublicKey(InputStream data, RSAPublicKey publicKey, OutputStream encodeStream) throws Exception {
+    public static void encryptByPublicKey(InputStream dataStream, RSAPublicKey publicKey, OutputStream encodeStream) throws Exception {
         if (null == publicKey) {
             throw new Exception("rsa publicKey is null");
         }
         Cipher cipher = Cipher.getInstance(ENCRYPT_TYPE_RSA);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-        CipherInputStream cipherInputStream = new CipherInputStream(data, cipher);
-        int buffSize = 4 << 20;
+        // 计算分组长度
+        int key_len = publicKey.getModulus().bitLength() / 8 - 11;
+        int buffSize = key_len * 1024;
         byte[] buf = new byte[buffSize];
-        int len = 0;
-        while ((len = cipherInputStream.read(buf)) != -1) {
-            encodeStream.write(buf, 0, len);
+        int len = 0, end = 0;
+        while ((len = dataStream.read(buf)) != -1) {
+            for (int start = 0; start < len; start += key_len) {
+                end = start + key_len;
+                if (end > len) {
+                    end = len;
+                }
+                byte[] doFinal = cipher.doFinal(HelperUtil.subarray(buf, start, end));
+                encodeStream.write(doFinal, 0, doFinal.length);
+            }
         }
-        cipherInputStream.close();
+        dataStream.close();
+        encodeStream.close();
 
     }
 
-    public static void decryptByPrivateKey(InputStream data, RSAPrivateKey privateKey, OutputStream decodeStream) throws Exception {
+    public static void decryptByPrivateKey(InputStream dataStream, RSAPrivateKey privateKey, OutputStream decodeStream) throws Exception {
         if (null == privateKey) {
             throw new Exception("rsa privateKey is null");
         }
         Cipher cipher = Cipher.getInstance(ENCRYPT_TYPE_RSA);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        CipherOutputStream cipherOutputStream = new CipherOutputStream(decodeStream, cipher);
-        int buffSize = 4 << 20;
+        // 计算分组长度
+        int key_len = privateKey.getModulus().bitLength() / 8;
+        int buffSize = key_len * 1024;
         byte[] buf = new byte[buffSize];
-        int len = 0;
-        while ((len = data.read(buf)) != -1) {
-            cipherOutputStream.write(buf, 0, len);
+        int len = 0, end = 0;
+        while ((len = dataStream.read(buf)) != -1) {
+            for (int start = 0; start < len; start += key_len) {
+                end = start + key_len;
+                if (end > len) {
+                    end = len;
+                }
+                byte[] doFinal = cipher.doFinal(HelperUtil.subarray(buf, start, end));
+                decodeStream.write(doFinal, 0, doFinal.length);
+            }
         }
-        cipherOutputStream.close();
+        dataStream.close();
+        decodeStream.close();
 
     }
 
