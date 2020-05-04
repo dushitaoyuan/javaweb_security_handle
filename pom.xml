@@ -6,13 +6,12 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.7.RELEASE</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.taoyuanx</groupId>
-    <artifactId>security-demo</artifactId>
+    <artifactId>javaweb_security_handle</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>security-demo</name>
-    <description>java security demo</description>
+    <name>javaweb_security_handle</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

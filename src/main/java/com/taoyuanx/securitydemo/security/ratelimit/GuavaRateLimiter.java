@@ -42,6 +42,9 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
 
     @Override
     public boolean tryCount(int count, String key, Long totalCount) {
+        if (count > totalCount) {
+            return false;
+        }
         //标记后,直接返回false
         if (TOTAL_LIMIT_ZERO_FLAG.mightContain(key)) {
             return false;
@@ -53,18 +56,15 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
         LongAdder longAdder = null;
         if (countHolder.containsKey(key)) {
             longAdder = countHolder.get(key);
-            longAdder.add(-count);
-            //资源总数用完后,标记
-            if (longAdder.longValue() <= 0) {
+            if (longAdder.longValue() >=totalCount) {
                 TOTAL_LIMIT_ZERO_FLAG.put(key);
                 countHolder.remove(key);
-                return true;
+                return false;
             }
-            return false;
+            longAdder.add(count);
+            return true;
         }
-        if (count > totalCount) {
-            return false;
-        }
+
         longAdder = new LongAdder();
         countHolder.putIfAbsent(key, longAdder);
         countHolder.get(key).add(count);

@@ -158,11 +158,7 @@ public class BussinessController {
     }
 
 
-    /**
-     * 登录安全控制
-     *
-     * @return
-     */
+
     @PostMapping("loginOut")
     @ResponseBody
     public void loginOut(HttpServletResponse response, HttpServletRequest request) throws Exception {
@@ -171,7 +167,7 @@ public class BussinessController {
     }
 
     /**
-     * 黑名单测试
+     * 文件上传
      *
      * @return
      */
@@ -206,9 +202,11 @@ public class BussinessController {
     public void upload(HttpServletRequest request, HttpServletResponse response) throws Exception {
         fileHandler.handleFile(response, request);
     }
-    @RateLimit(type = RateLimitType.TOTAL_COUNT,key = "rate_count",totalCount = 100)
+    @RateLimit(type = RateLimitType.TOTAL_COUNT,key = "rate_count",totalCount = 10)
     @GetMapping("rate_count")
-    public void rateCount(int index) throws Exception {
-        System.out.println("rate_count\t"+index);
+    @ResponseBody
+    public  Result rateCount() throws Exception {
+        System.out.println("rate_count\t");
+        return ResultBuilder.success("ok");
     }
 }

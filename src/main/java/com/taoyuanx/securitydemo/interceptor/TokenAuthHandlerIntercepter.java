@@ -69,7 +69,7 @@ public class TokenAuthHandlerIntercepter implements HandlerInterceptor {
             }
             Map<String, Object> tokenData = toeknHelper.vafy(token);
             Long tokenAccountId = toeknHelper.getAccountId(tokenData);
-            if (tokenAccountId != accountId) {
+            if (!tokenAccountId.equals(accountId) ) {
                 return false;
             }
 

@@ -1,6 +1,7 @@
 package com.taoyuanx.securitydemo.config;
 
 import com.taoyuanx.securitydemo.security.ratelimit.AbstractRateLimiter;
+import com.taoyuanx.securitydemo.security.ratelimit.GuavaRateLimiter;
 import com.taoyuanx.securitydemo.security.ratelimit.RedisRateLimiter;
 import com.taoyuanx.securitydemo.utils.RSAUtil;
 import lombok.Data;
@@ -62,13 +63,18 @@ public class GlobalConfig implements InitializingBean {
      * @param redisTemplate
      * @return
      */
-    @Bean
+  /*  @Bean
     @Autowired
-    public AbstractRateLimiter rateLimiter(StringRedisTemplate redisTemplate) {
+    public AbstractRateLimiter redisRateLimiter(StringRedisTemplate redisTemplate) {
         RedisRateLimiter redisRateLimiter = new RedisRateLimiter(redisTemplate);
         return redisRateLimiter;
-    }
+    }*/
 
+    @Bean
+    public AbstractRateLimiter guavaRateLimiter() {
+        GuavaRateLimiter guavaRateLimiter = new GuavaRateLimiter();
+        return guavaRateLimiter;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

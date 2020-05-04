@@ -34,7 +34,7 @@ public class SecurityDemoApplicationTests {
     public void reateLimitCount() throws Exception {
         int batch=101;
         for(int i=0;i<batch;i++){
-           bussinessController.rateCount(i);
+           bussinessController.rateCount();
         }
     }
 
