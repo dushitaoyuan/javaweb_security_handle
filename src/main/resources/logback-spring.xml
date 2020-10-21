@@ -2,7 +2,7 @@
 
 <configuration scan="true" scanPeriod="10 seconds">
     <springProperty name="LOG_HOME" source="logging.path" defaultValue="./logs"/>
-    <property name="LOG_PREFIX" value="seed-boot"/>
+    <property name="LOG_PREFIX" value="demo"/>
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
     <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
@@ -114,7 +114,7 @@
 
 
         <springProfile name="dev">
-                <root level="DEBUG">
+                <root level="INFO">
                     <appender-ref ref="CONSOLE"/>
                 </root>
         </springProfile>

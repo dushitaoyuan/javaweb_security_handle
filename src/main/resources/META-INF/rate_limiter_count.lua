@@ -1,7 +1,7 @@
 --判断资源归0标记是否存在
 --标记实现,可通过 布隆过滤和bitmap实现 注意redis支持情况
 local bit_key_offset=tonumber(ARGV[3])
-redis.log(redis.LOG_WARNING, "bit_key_offset " .. ARGV[3])
+--redis.log(redis.LOG_WARNING, "bit_key_offset " .. ARGV[3])
 local zero_flag =redis.call("GETBIT", KEYS[2],bit_key_offset)
 if zero_flag == 1 then
     return -1
