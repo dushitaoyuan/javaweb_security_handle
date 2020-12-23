@@ -62,8 +62,6 @@ public class EsapiTest {
         System.out.println(ESAPI.validator().isValidInput(
                 "email", "12345", "Email",
                 200, false));
-
-
         System.out.println(ESAPI.validator().isValidInput(
                 "email", "192.168.10.1", "IPAddress",
                 200, false));

@@ -42,7 +42,7 @@ public class BoomFilterTest {
                 count++;
             }
         }
-        System.out.println("失败次数:" + count + "错误率:" + PercentUtil.percent(Double.valueOf(count), Double.valueOf(max), 2));
+        System.out.println("失败次数:" + count + "错误率:" + PercentUtil.percent(Double.valueOf(count), Double.valueOf(max), 4));
 
     }
 
@@ -51,22 +51,12 @@ public class BoomFilterTest {
 
     @Test
     public void testEl() {
-        String el = "${m}";
+        String el = "#m";
         ExpressionParser parser = new SpelExpressionParser();
         EvaluationContext context = new StandardEvaluationContext();
         context.setVariable("m", "1234");
         Expression expression = parser.parseExpression(el);
-
-
         System.out.println(expression.getValue(context, String.class));
 
-        // 定义变量
-      /*  String name = "Tom";
-        EvaluationContext context = new StandardEvaluationContext();  // 表达式的上下文,
-        context.setVariable("myName", name);                        // 为了让表达式可以访问该对象, 先把对象放到上下文中
-        ExpressionParser parser = new SpelExpressionParser();
-        System.out.println( parser.parseExpression("#myName").getValue(context, String.class));;   // Tom , 使用变量
-
-*/
     }
 }

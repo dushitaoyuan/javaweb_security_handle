@@ -34,7 +34,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-        <!--      boot 官方推荐模板引擎-->
         <dependency>
               <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -64,11 +63,7 @@
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
         </dependency>
-<!--<dependency>
-    <groupId>org.bouncycastle</groupId>
-    <artifactId>bcprov-jdk15on</artifactId>
-    <version>1.64</version>
-</dependency>-->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -97,48 +92,8 @@
             <version>2.2.0.0</version>
         </dependency>
     </dependencies>
-     <profiles>
-        <!--
-        dev 开发环境
-        test 测试环境
-        prod 生产环境
-        -->
-         <profile>
-          <id>dev</id>
-          <activation>
-            <activeByDefault>true</activeByDefault>
-          </activation>
-          <properties>
-            <profiles.active>dev</profiles.active>
-          </properties>
-
-        </profile>
-
-        <profile>
-          <id>test</id>
-          <properties>
-            <profiles.active>test</profiles.active>
-          </properties>
-        </profile>
-
-        <profile>
-          <id>prod</id>
-          <properties>
-            <profiles.active>prod</profiles.active>
-          </properties>
-        </profile>
-      </profiles>
     <build>
-    <finalName>${project.artifactId}-${project.version}-${profiles.active}</finalName>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-          <filtering>true</filtering>
-      </resource>
-      <resource>
-        <directory>${project.basedir}/profiles/${profiles.active}</directory>
-      </resource>
-    </resources>
+    <finalName>${project.artifactId}-${project.version}</finalName>
         <plugins>
               <plugin>
                   <groupId>org.springframework.boot</groupId>

@@ -55,7 +55,6 @@
 
 
 
-## esapi 介绍
-
+## 安全控制库 esapi
 此jar包为一个比较全面的安全库,控制较为全面,业务较为复杂的可自行扩展  
 基本使用例子:com.taoyuanx.securitydemo.EsapiTest  

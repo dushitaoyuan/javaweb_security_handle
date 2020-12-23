@@ -46,7 +46,7 @@ public class RequestParamFilterUtil {
     /**
      * sql注入风险检测
      */
-    private static List<String> SQL_KEY_WORDS = Splitter.on(",").splitToList("'|and|exec|insert|select|delete|update|count|*|%|chr|mid|master|truncate|char|declare|; |or|-|+|,");
+    private static List<String> SQL_KEY_WORDS = Splitter.on("|").splitToList("'|and|exec|insert|select|delete|update|count|*|%|chr|mid|master|truncate|char|declare|; |or|-|+|,");
     public static boolean isSqlInject(String... params) {
         if (null == params) {
             return false;
