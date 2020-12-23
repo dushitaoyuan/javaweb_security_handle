@@ -6,7 +6,8 @@ package com.taoyuanx.securitydemo.security;
  * @date 2019/8/27
  */
 public enum RateLimitType {
-    IP(0, "IP限流"), METHOD(1, "方法名"),
+    IP(0, "单个方法IP限流"),
+    METHOD(1, "方法名"),
     SERVICE_KEY(3, "业务自定义key"),
     GLOBAL(4, "系统全局"),
     TOTAL_COUNT(5, "总次数限制");

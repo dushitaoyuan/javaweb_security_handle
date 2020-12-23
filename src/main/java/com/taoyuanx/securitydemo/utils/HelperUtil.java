@@ -17,8 +17,12 @@ public class HelperUtil {
         return str == null || str.isEmpty();
     }
 
+    public static boolean isNotEmpty(String str) {
+        return !isEmpty(str);
+    }
+
     public static String getExtension(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase();
+        return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
     }
 
     public static InputStream getInputStream(String filePath) throws FileNotFoundException {

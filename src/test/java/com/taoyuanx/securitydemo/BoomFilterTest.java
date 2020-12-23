@@ -47,16 +47,25 @@ public class BoomFilterTest {
     }
 
 
-
-
     @Test
     public void testEl() {
-        String el = "#m";
+        Map<String, String> args3 = new HashMap<>();
+        args3.put("args1", "args3_1");
+        args3.put("args2", "args3_2");
+        args3.put("args3", "args3_3");
+        Object[] args = new Object[]{"args1", 2, args3};
         ExpressionParser parser = new SpelExpressionParser();
         EvaluationContext context = new StandardEvaluationContext();
-        context.setVariable("m", "1234");
-        Expression expression = parser.parseExpression(el);
+        context.setVariable("args", args);
+        Expression expression = parser.parseExpression("#args[0]");
         System.out.println(expression.getValue(context, String.class));
 
+
+        expression = parser.parseExpression("#args[1]");
+        System.out.println(expression.getValue(context, String.class));
+
+        expression = parser.parseExpression("#args[2].get('args1')");
+        System.out.println(expression.getValue(context, String.class));
+        System.out.println(expression.getValue(context, String.class));
     }
 }

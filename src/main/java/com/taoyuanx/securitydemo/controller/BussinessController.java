@@ -101,7 +101,7 @@ public class BussinessController {
     @GetMapping("rateLimit")
     @ResponseBody
     @Rate(rate = {@RateLimit(type = RateLimitType.IP, limit = 1),
-            @RateLimit(type = RateLimitType.SERVICE_KEY, limit = 10, key = "api/rateLimit")})
+            @RateLimit(type = RateLimitType.SERVICE_KEY, limit = 10, limitKey = "api/rateLimit")})
     public String rateLimit() {
         return "hello rateLimit!";
     }
@@ -113,7 +113,7 @@ public class BussinessController {
      */
     @GetMapping("rateLimit_key")
     @ResponseBody
-    @RateLimit(type = RateLimitType.SERVICE_KEY, limit = 100, key = "api/rateLimit_key")
+    @RateLimit(type = RateLimitType.SERVICE_KEY, limit = 100, limitKey = "api/rateLimit_key")
     public String rateLimitKey() {
         return "hello rateLimit!";
     }
@@ -156,7 +156,6 @@ public class BussinessController {
         throw new ServiceException("登陆异常");
 
     }
-
 
 
     @PostMapping("loginOut")
@@ -202,10 +201,11 @@ public class BussinessController {
     public void upload(HttpServletRequest request, HttpServletResponse response) throws Exception {
         fileHandler.handleFile(response, request);
     }
-    @RateLimit(type = RateLimitType.TOTAL_COUNT,key = "rate_count",totalCount = 10)
+
+    @RateLimit(type = RateLimitType.TOTAL_COUNT, limitKey = "rate_count", totalCount = 10)
     @GetMapping("rate_count")
     @ResponseBody
-    public  Result rateCount() throws Exception {
+    public Result rateCount() throws Exception {
         System.out.println("rate_count\t");
         return ResultBuilder.success("ok");
     }
