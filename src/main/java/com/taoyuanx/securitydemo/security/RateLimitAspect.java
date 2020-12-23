@@ -61,29 +61,24 @@ public class RateLimitAspect {
         RateLimitType type = rateLimit.type();
         String key = rateLimit.key();
         if (type == null) {
-            key = methodName;
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("{}限流策略未定义,采用[{}]限流策略", methodName, RateLimitType.METHOD);
-            }
-        } else {
-            switch (type) {
-                case IP:
-                    String serviceKey = rateLimit.key();
-                    if (serviceKey == null || key.isEmpty()) {
-                        key = RequestUtil.getRemoteIp() + "_" + methodName;
-                    } else {
-                        key = RequestUtil.getRemoteIp() + "_" + serviceKey;
-                    }
-                    break;
-                case METHOD:
-                    key = methodName;
-                    break;
-                case SERVICE_KEY:
-                    break;
-                case GLOBAL:
-                    key = "global";
-                    break;
-            }
+            type = RateLimitType.METHOD;
+        }
+        switch (type) {
+            case IP:
+                if (key == null || key.isEmpty()) {
+                    key = RequestUtil.getRemoteIp() + "_" + methodName;
+                } else {
+                    key = RequestUtil.getRemoteIp() + "_" + key;
+                }
+                break;
+            case METHOD:
+                key = methodName;
+                break;
+            case SERVICE_KEY:
+                break;
+            case GLOBAL:
+                key = "global";
+                break;
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("采用[{}]限流策略,限流key:{}", type, key);

@@ -31,12 +31,10 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
             rateHolder.clear();
         }
         RateLimiter rateLimiter = null;
-        if (rateHolder.containsKey(key)) {
-            rateLimiter = rateHolder.get(key);
-        } else {
-            rateLimiter = RateLimiter.create(limit);
+        if (!rateHolder.containsKey(key)) {
+            rateHolder.putIfAbsent(key, RateLimiter.create(limit));
         }
-        rateHolder.putIfAbsent(key, rateLimiter);
+        rateLimiter = rateHolder.get(key);
         return rateLimiter.tryAcquire(permits);
     }
 
@@ -54,20 +52,16 @@ public class GuavaRateLimiter extends AbstractRateLimiter {
             countHolder.clear();
         }
         LongAdder longAdder = null;
-        if (countHolder.containsKey(key)) {
-            longAdder = countHolder.get(key);
-            if (longAdder.longValue() >=totalCount) {
-                TOTAL_LIMIT_ZERO_FLAG.put(key);
-                countHolder.remove(key);
-                return false;
-            }
-            longAdder.add(count);
-            return true;
+        if (!countHolder.containsKey(key)) {
+            countHolder.putIfAbsent(key, new LongAdder());
         }
-
-        longAdder = new LongAdder();
-        countHolder.putIfAbsent(key, longAdder);
-        countHolder.get(key).add(count);
+        longAdder = countHolder.get(key);
+        if (longAdder.longValue() >= totalCount) {
+            TOTAL_LIMIT_ZERO_FLAG.put(key);
+            countHolder.remove(key);
+            return false;
+        }
+        longAdder.add(count);
         return true;
     }
 
