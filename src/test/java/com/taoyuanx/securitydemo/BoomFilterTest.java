@@ -6,13 +6,9 @@ import org.junit.Test;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,6 +62,8 @@ public class BoomFilterTest {
 
         expression = parser.parseExpression("#args[2].get('args1')");
         System.out.println(expression.getValue(context, String.class));
+
+        expression = parser.parseExpression("#args[2].get('args1')+#args[2].get('args2')");
         System.out.println(expression.getValue(context, String.class));
     }
 }

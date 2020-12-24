@@ -209,4 +209,23 @@ public class BussinessController {
         System.out.println("rate_count\t");
         return ResultBuilder.success("ok");
     }
+
+    /**
+     * el 表达式限流测试
+     */
+    @RateLimit(type = RateLimitType.SERVICE_KEY, limitKey = "#user", limit = 1)
+    @GetMapping("el_rate")
+    @ResponseBody
+    public Result elRateCountTest(String user) throws Exception {
+        System.out.println("el_rate \t");
+        return ResultBuilder.success("ok");
+    }
+
+    @RateLimit(type = RateLimitType.SERVICE_KEY, limitKey = "#fullMethodName+#user", limit = 1)
+    @GetMapping("el_rate2")
+    @ResponseBody
+    public Result elRateCountTest2(String user) throws Exception {
+        System.out.println("el_rate2 \t");
+        return ResultBuilder.success("ok");
+    }
 }

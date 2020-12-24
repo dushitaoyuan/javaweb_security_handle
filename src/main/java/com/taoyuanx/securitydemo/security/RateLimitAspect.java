@@ -23,6 +23,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * aop限流
@@ -45,32 +46,33 @@ public class RateLimitAspect {
 
     @Around("ratePointCut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        handleRateLimit(joinPoint);
+        return joinPoint.proceed();
+    }
+
+    private void handleRateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
         Signature signature = joinPoint.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
         Method currentMethod = methodSignature.getMethod();
         String className = joinPoint.getTarget().getClass().getName();
-        String methodName = className + "." + methodSignature.getName();
-        Object[] args = joinPoint.getArgs();
+        String fullMethodName = className + "." + methodSignature.getName();
         RateLimit rateLimit = AnnotationUtils.findAnnotation(currentMethod, RateLimit.class);
         if (rateLimit != null) {
-            handleRateLimit(rateLimit, methodName, args);
+            doHandleRateLimit(rateLimit, fullMethodName, joinPoint, methodSignature);
         } else {
             Rate rate = AnnotationUtils.findAnnotation(currentMethod, Rate.class);
             if (rate != null && rate.rate() != null) {
                 for (RateLimit limit : rate.rate()) {
-                    handleRateLimit(limit, methodName, args);
+                    doHandleRateLimit(limit, fullMethodName, joinPoint, methodSignature);
                 }
-
             }
-
         }
-        return joinPoint.proceed();
     }
 
 
-    private void handleRateLimit(RateLimit rateLimit, String methodName, Object[] args) throws Throwable {
+    private void doHandleRateLimit(RateLimit rateLimit, String fullMethodName, ProceedingJoinPoint joinPoint, MethodSignature methodSignature) throws Throwable {
         RateLimitType type = rateLimit.type();
-        String limitKey = parseLimitKey(rateLimit, methodName, args);
+        String limitKey = parseLimitKey(rateLimit, fullMethodName, joinPoint, methodSignature);
         if (LOG.isDebugEnabled()) {
             LOG.debug("采用[{}]限流策略,限流key:{}", type, limitKey);
         }
@@ -83,16 +85,14 @@ public class RateLimitAspect {
                 throw new LimitException("请求过于频繁,请稍后再试");
             }
         }
-
-
     }
 
 
     private static final String GLOBAL_LIMIT_KEY = "global";
 
-    private String parseLimitKey(RateLimit rateLimit, String methodName, Object[] args) {
+    private String parseLimitKey(RateLimit rateLimit, String fullMethodName, ProceedingJoinPoint joinPoint, MethodSignature methodSignature) {
         RateLimitType type = rateLimit.type();
-        String limitKey = parseLimitKey(rateLimit.limitKey(), methodName, args);
+        String limitKey = rateLimit.limitKey();
         boolean emptyLimitKey = HelperUtil.isEmpty(limitKey);
         switch (type) {
             case IP:
@@ -100,23 +100,28 @@ public class RateLimitAspect {
                     /**
                      * 单个方法ip限流
                      */
-                    return RequestUtil.getRemoteIp() + "_" + methodName;
+                    return RequestUtil.getRemoteIp() + "_" + fullMethodName;
                 }
                 /**
                  * 全局ip限流
                  */
                 return RequestUtil.getRemoteIp() + "_" + limitKey;
             case METHOD:
-                return methodName;
+                return fullMethodName;
             case SERVICE_KEY:
-                if (emptyLimitKey) {
+                /**
+                 * el表达式只有在SERVICE_KEY时才会生效
+                 * 允许用户自定义限流key
+                 */
+                limitKey = parseLimitKey(rateLimit.limitKey(), fullMethodName, joinPoint, methodSignature);
+                if (HelperUtil.isEmpty(limitKey)) {
                     throw new LimitException("请指定limitKey");
                 }
                 return limitKey;
             case GLOBAL:
                 return GLOBAL_LIMIT_KEY;
             default:
-                return methodName;
+                return fullMethodName;
         }
 
     }
@@ -125,19 +130,28 @@ public class RateLimitAspect {
         return limitKey.startsWith("#");
     }
 
-    private String parseLimitKey(String limitKey, String methodName, Object[] args) {
+    private String parseLimitKey(String limitKey, String fullMethodName, ProceedingJoinPoint joinPoint, MethodSignature methodSignature) {
         if (HelperUtil.isEmpty(limitKey)) {
             return limitKey;
         }
         if (!isEl(limitKey)) {
             return limitKey;
         }
+
         /**
-         * el表达式解析 设置内置变量 方法名称,参数
+         * el表达式解析
+         * 并设置内置变量 方法参数
          */
+        Object[] args = joinPoint.getArgs();
+        String[] argsName = methodSignature.getParameterNames();
         EvaluationContext context = new StandardEvaluationContext();
-        context.setVariable("methodName", methodName);
-        context.setVariable("args", args);
+        context.setVariable("fullMethodName", fullMethodName);
+        if (Objects.nonNull(args) && args.length > 0) {
+            context.setVariable("args", args);
+            for (int i = 0; i < args.length; i++) {
+                context.setVariable(argsName[i], args[i]);
+            }
+        }
         Expression expression = EL_PARSER.parseExpression(limitKey);
         return expression.getValue(context, String.class);
 
